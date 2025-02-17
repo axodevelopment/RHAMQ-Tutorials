@@ -1,6 +1,10 @@
+# pre-req
+
+oc new-project basic-broker
+
 ### basic-broker v1
 
-oc apply -f basic-broker-1.yaml
+oc apply -f basic-broker-v1.yaml
 
 oc get svc
 

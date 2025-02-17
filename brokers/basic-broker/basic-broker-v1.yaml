@@ -45,6 +45,11 @@ spec:
       bindToAllInterfaces: true
       verifyHost: false
       securityEnabled: false
+    - name: core
+      protocols: CORE
+      port: 61626
+      expose: true
+      sslEnabled: false
   upgrades:
     enabled: false
     minor: false

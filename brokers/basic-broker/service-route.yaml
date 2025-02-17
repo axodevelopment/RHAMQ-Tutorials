@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata: 
-  name: acceptor-svc
+  name: ext-acceptor-svc
   namespace: basic-broker
 spec:
   ports:
@@ -22,6 +22,21 @@ spec:
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
+  name: core-acceptor-svc-rte
+  namespace: basic-broker
+spec:
+  port:
+    targetPort: 61626
+  tls:
+    termination: passthrough 
+    insecureEdgeTerminationPolicy: None 
+  to:
+    kind: Service
+    name: ext-acceptor-svc
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
   name: amqp-acceptor-svc-rte
   namespace: basic-broker
 spec:
@@ -32,4 +47,4 @@ spec:
     insecureEdgeTerminationPolicy: None 
   to:
     kind: Service
-    name: acceptor-svc
+    name: ext-acceptor-svc

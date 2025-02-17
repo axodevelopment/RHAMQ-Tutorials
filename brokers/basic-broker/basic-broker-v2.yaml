@@ -46,6 +46,14 @@ spec:
       verifyHost: false
       securityEnabled: true
       saslMechanisms: PLAIN
+    - name: core
+      protocols: CORE
+      port: 61626
+      expose: true
+      sslEnabled: false
+      bindToAllInterfaces: true
+      securityEnabled: true
+      saslMechanisms: PLAIN
   upgrades:
     enabled: false
     minor: false
