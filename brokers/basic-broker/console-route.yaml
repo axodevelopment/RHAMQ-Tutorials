@@ -1,0 +1,14 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: broker-console
+  namespace: basic-broker
+spec:
+  port:
+    targetPort: 8161
+  to:
+    kind: Service
+    name: basic-broker-wconsj-0-svc
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect

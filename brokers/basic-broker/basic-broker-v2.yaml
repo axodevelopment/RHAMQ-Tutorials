@@ -1,0 +1,59 @@
+apiVersion: broker.amq.io/v1beta1
+kind: ActiveMQArtemis
+metadata:
+  name: basic-broker
+  namespace: basic-broker
+spec:
+  env:
+    - name: JAVA_ARGS_APPEND
+      value: "-Dwebconfig.bindings.artemis.uri=http://0.0.0.0:8161 -Dartemis.acceptors.amqp.host=0.0.0.0"
+    - name: AMQ_EXTRA_ARGS
+      value: "--relax-jolokia"
+  adminUser: admin
+  adminPassword: admin
+  deploymentPlan:
+    size: 1
+    image: placeholder
+    labels:
+      peer.group: jdbc-ha
+    requireLogin: true
+    persistenceEnabled: true
+    journalType: nio
+    messageMigration: true
+    enableMetricsPlugin: true
+    resources:
+      limits:
+        cpu: 500m
+        memory: 1024Mi
+      requests:
+        cpu: 250m
+        memory: 512Mi
+    storage:
+      size: "4Gi"
+    jolokiaAgentEnabled: false
+    managementRBACEnabled: true
+  console:
+    expose: true
+  acceptors:
+    - name: amqp
+      protocols: amqp
+      port: 5672
+      expose: true
+      anycastPrefix: jms.queue.
+      multicastPrefix: /topic/
+      sslEnabled: false
+      bindToAllInterfaces: true
+      verifyHost: false
+      securityEnabled: true
+      saslMechanisms: PLAIN
+  upgrades:
+    enabled: false
+    minor: false
+  brokerProperties:
+    - "# Configure myQueue as anycast"
+    - addressConfigurations."myQueue".routingTypes=ANYCAST
+    - addressConfigurations."myQueue".queueConfigs."myQueue".routingType=ANYCAST
+    - "# Configure DLQ settings"
+    - addressSettings."myQueue".deadLetterAddress=DLQ
+    - addressSettings."myQueue".expiryAddress=ExpiryQueue
+    - addressSettings."myQueue".maxDeliveryAttempts=3
