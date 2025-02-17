@@ -42,7 +42,7 @@ spec:
       sslEnabled: true
       sslSecret: ext-amqp-acceptor-ssl-secret
     - name: core
-      protocols: CORE
+      protocols: all
       port: 61626
       expose: true
       expose: true

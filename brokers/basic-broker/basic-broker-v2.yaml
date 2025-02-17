@@ -47,7 +47,7 @@ spec:
       securityEnabled: true
       saslMechanisms: PLAIN
     - name: core
-      protocols: CORE
+      protocols: all
       port: 61626
       expose: true
       sslEnabled: false
