@@ -31,5 +31,23 @@ DO NOT PROCECEED UNTIL DB IS FULLY INIT
 db still needs to be init (this takes time, in oracle case, up to several minutes)
 oc logs oracle-db-0 --follow
 
+you should see
+```
+#########################
+DATABASE IS READY TO USE!
+#########################
+```
 
-wait for logs
+# prep certs
+
+get certs
+
+wget -O server-keystore.jks https://github.com/apache/activemq-artemis/raw/main/tests/security-resources/server-keystore.jks
+wget -O server-ca-truststore.jks https://github.com/apache/activemq-artemis/raw/main/tests/security-resources/server-ca-truststore.jks
+wget -O client-ca-truststore.jks https://github.com/apache/activemq-artemis/raw/main/tests/security-resources/client-ca-truststore.jks
+
+
+
+
+
+# peer brokers
