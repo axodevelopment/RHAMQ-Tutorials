@@ -22,28 +22,33 @@ oc create secret generic ext-amqp-acceptor-ssl-secret \
 
 pull the client-truststore and if you need to repull the server-keystore
 
-oc get secret ext-amqp-acceptor-ssl-secret -n basic-broker -o jsonpath='{.data.client\.ts}' | base64 -d > client-truststore.jks
+oc get secret ext-amqp-acceptor-ssl-secret -n basic-broker -o jsonpath='{.data.client\.ts}' | base64 -d > cs-client-truststore.jks
 
-oc get secret ext-amqp-acceptor-ssl-secret -n basic-broker -o jsonpath='{.data.broker\.ks}' | base64 -d > server-keystore.jks
+oc get secret ext-amqp-acceptor-ssl-secret -n basic-broker -o jsonpath='{.data.broker\.ks}' | base64 -d > cs-server-keystore.jks
 
 create the combined-trustore and put both the client and server ks and trusstore.
 
 keytool -importkeystore \
-  -srckeystore server-keystore.jks \
+  -srckeystore cs-server-keystore.jks \
   -destkeystore combined-truststore.jks \
   -srcstorepass securepass \
   -deststorepass securepass
 
 keytool -importkeystore \
-  -srckeystore client-truststore.jks \
+  -srckeystore cs-client-truststore.jks \
   -destkeystore combined-truststore.jks \
   -srcstorepass securepass \
   -deststorepass securepass
+
+check if everything is correct
+keytool -list -v -keystore combined-truststore.jks -storepass securepass
 
 Now we can apply the broker
 oc apply -f basic-broker-3.yaml
 
 oc apply -f service.yaml
+
+if basic-auth-security is still deployed you will need to login with an account in that resource.
 
 by default the route should be:
 basic-broker-amqp-0-svc-rte
@@ -58,7 +63,8 @@ the route should be.
 rn=<route.name>-<route.namespace>.apps.<cluster.name>.<domainname>
 
 here is my jms url:
-quarkus.qpid-jms.url=amqps://amqp-acceptor-svc-rte-oracle-jdbc-shared-store.apps.axolab.axodevelopment.dev:443?transport.trustStoreLocation=/Users/michaelwilson/truststore/amq-oracle-jdbc-shared-store/combined-truststore.jks&transport.trustStorePassword=securepass&transport.verifyHost=false
+quarkus.qpid-jms.url=amqps://amqp-acceptor-svc-rte-basic-broker.apps.axolab.axodevelopment.dev:443?transport.trustStoreLocation=/Users/michaelwilson/truststore/feb18/combined-truststore.jks&transport.trustStorePassword=securepass&transport.verifyHost=false
+
 
 ampqs://<rn>:443?transport.trustStoreLocation=/<trusts-storepath>/combined-truststore.jks&transport.trustStorePassword=securepass&transport.verifyHost=false
 
