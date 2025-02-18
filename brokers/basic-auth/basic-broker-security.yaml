@@ -1,0 +1,39 @@
+apiVersion: broker.amq.io/v1beta1
+kind: ActiveMQArtemisSecurity
+metadata:
+  name: basic-auth-security
+  namespace: basic-broker
+spec:
+  loginModules:
+    propertiesLoginModules:
+      - name: "props-login"
+        users:
+          - name: "testuser"
+            password: "testpassword"
+            roles:
+              - "amq"
+  securityDomains:
+    brokerDomain:
+      name: "activemq"
+      loginModules:
+        - name: "props-login"
+          flag: "sufficient"
+  securitySettings:
+    broker:
+      - match: "#"
+        permissions:
+          - operationType: "send"
+            roles:
+              - "amq"
+          - operationType: "consume"
+            roles:
+              - "amq"
+          - operationType: "createNonDurableQueue"
+            roles:
+              - "amq"
+          - operationType: "createDurableQueue"
+            roles:
+              - "amq"
+          - operationType: "createAddress"
+            roles:
+              - "amq"

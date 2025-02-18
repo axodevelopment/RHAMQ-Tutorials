@@ -41,9 +41,7 @@ spec:
       expose: true
       anycastPrefix: jms.queue.
       multicastPrefix: /topic/
-      sslEnabled: false
       bindToAllInterfaces: true
-      verifyHost: false
       securityEnabled: true
       saslMechanisms: PLAIN
     - name: core
@@ -51,9 +49,6 @@ spec:
       port: 61626
       expose: true
       sslEnabled: false
-      bindToAllInterfaces: true
-      securityEnabled: true
-      saslMechanisms: PLAIN
   upgrades:
     enabled: false
     minor: false
