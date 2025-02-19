@@ -4,6 +4,7 @@ Broker's competing for lock on backend db
 
 # create project
 oc new-project oracle-db-amq
+oc new-project peer-broker
 
 # permissions
 
@@ -45,6 +46,14 @@ get certs
 
 If you have the certs from the basic-broker tls still installed the same cert here is used 
 
+oc get secret ext-amqp-acceptor-ssl-secret -n basic-broker -o yaml | \
+sed 's/namespace: basic-broker/namespace: peer-broker/' | \
+sed 's/creationTimestamp:.*$/creationTimestamp: null/' | \
+sed '/resourceVersion:/d' | \
+sed '/uid:/d' | \
+oc create -f -
+
+
 -- or --
 
 wget -O server-keystore.jks https://github.com/apache/activemq-artemis/raw/main/tests/security-resources/server-keystore.jks
@@ -61,9 +70,9 @@ oc create secret generic ext-amqp-acceptor-ssl-secret \
 
 pull the client-truststore and if you need to repull the server-keystore
 
-oc get secret ext-amqp-acceptor-ssl-secret -n basic-broker -o jsonpath='{.data.client\.ts}' | base64 -d > cs-client-truststore.jks
+oc get secret ext-amqp-acceptor-ssl-secret -n peer-broker -o jsonpath='{.data.client\.ts}' | base64 -d > cs-client-truststore.jks
 
-oc get secret ext-amqp-acceptor-ssl-secret -n basic-broker -o jsonpath='{.data.broker\.ks}' | base64 -d > cs-server-keystore.jks
+oc get secret ext-amqp-acceptor-ssl-secret -n peer-broker -o jsonpath='{.data.broker\.ks}' | base64 -d > cs-server-keystore.jks
 
 create the combined-trustore and put both the client and server ks and trusstore.
 
@@ -84,8 +93,7 @@ keytool -list -v -keystore combined-truststore.jks -storepass securepass
 
 # peer brokers
 
-oc new-project peer-broker-a
-oc new-project peer-broker-b
+
 
 oc apply -f peer-broker-a-v1.yaml
 oc apply -f peer-broker-b-v1.yaml
@@ -97,4 +105,4 @@ in logs of POD 1/1 => "AMQ221007: Server is now active"
 
 # add a dr
 
-oc new-project peer-broker-dr
+

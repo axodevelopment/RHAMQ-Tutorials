@@ -2,7 +2,7 @@ apiVersion: broker.amq.io/v1beta1
 kind: ActiveMQArtemis
 metadata:
   name: peer-broker-b
-  namespace: peer-broker-b
+  namespace: peer-broker
 spec:
   deploymentPlan:
     size: 1
