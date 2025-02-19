@@ -1,3 +1,40 @@
+# Leader-Follower AMQ Broker Example
+
+Hopefully after following the next steps you'll be able to setup and understand a Leader-Follower broker configuration.
+
+## Table of Contents
+
+1. [Prerequisites](#prerequisites)  
+2. [Create OpenShift Projects](#create-openshift-projects)  
+3. [Set Up Permissions](#set-up-permissions)  
+4. [Database Account Setup](#database-account-setup)  
+5. [Deploy the Oracle Database](#deploy-the-oracle-database)  
+6. [Wait for DB Initialization](#wait-for-db-initialization)  
+7. [Prepare TLS Certificates](#prepare-tls-certificates)  
+8. [Deploy the Peer Brokers](#deploy-the-peer-brokers)  
+9. [Additional Notes](#additional-notes)  
+
+---
+
+## Prerequisites
+
+- OpenShift CLI (oc)  
+- Access to an OpenShift cluster  
+- Basic familiarity with OpenShift projects, ServiceAccounts, and Secrets  
+- Oracle database image or a container image that can be used in OpenShift  
+- (Optional) Existing TLS certificates. Otherwise, you can generate or fetch sample certificates.  
+
+---
+
+## 1. Create OpenShift Projects
+
+Create two new projects (namespaces) on your OpenShift cluster for the Oracle database and the peer brokers:
+
+```bash
+oc new-project oracle-db-amq
+oc new-project peer-broker
+```
+
 # leader-follower
 
 Broker's competing for lock on backend db
