@@ -2,7 +2,7 @@ apiVersion: broker.amq.io/v1beta1
 kind: ActiveMQArtemis
 metadata:
   name: basic-broker
-  namespace: basic-broker
+  namespace: primary-drbroker-broker
 spec:
   env:
     - name: JAVA_ARGS_APPEND
@@ -18,7 +18,7 @@ spec:
       peer.group: jdbc-ha
     requireLogin: false
     persistenceEnabled: true
-    journalType: nio
+    journalType: aio
     messageMigration: true
     enableMetricsPlugin: true
     resources:

@@ -8,6 +8,7 @@ spec:
     size: 1
     clustered: false
     persistenceEnabled: false
+    journalType: aio
     labels:
       peer.group: jdbc-ha
     livenessProbe:

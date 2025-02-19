@@ -1,8 +1,8 @@
 apiVersion: broker.amq.io/v1beta1
 kind: ActiveMQArtemis
 metadata:
- name: broker-dr
- namespace: dr-drbroker-broker
+ name: broker-east
+ namespace: amq-east
 spec:
   acceptors:
     - expose: true
@@ -36,4 +36,5 @@ spec:
     journalType: aio
     enableMetricsPlugin: true
     jolokiaAgentEnabled: true
+    clustered: true
     image: placeholder

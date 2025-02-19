@@ -1,8 +1,8 @@
 apiVersion: broker.amq.io/v1beta1
 kind: ActiveMQArtemis
 metadata:
- name: broker-dr
- namespace: dr-drbroker-broker
+ name: broker-east
+ namespace: amq-east
 spec:
   acceptors:
     - expose: true
@@ -18,6 +18,13 @@ spec:
   adminPassword: admin
   adminUser: admin
   brokerProperties:
+    - 'AMQPConnections.target.uri=tcp://broker-west-all-0-svc.amq-west.svc.cluster.local:61616'
+    - AMQPConnections.target.user=admin
+    - AMQPConnections.target.password=admin
+    - AMQPConnections.target.autostart=true
+    - AMQPConnections.target.federations.abc.type=FEDERATION
+    - AMQPConnections.target.federations.abc.localQueuePolicies.policy1.includes.m4.queueMatch=tracking
+    - addressConfigurations.tracking.queueConfigs.tracking.routingType=ANYCAST
     - maxDiskUsage=85
     - clusterConfigurations.my-cluster.producerWindowSize=-1
     - 'addressSettings.#.redeliveryMultiplier=5'
@@ -36,4 +43,5 @@ spec:
     journalType: aio
     enableMetricsPlugin: true
     jolokiaAgentEnabled: true
+    clustered: true
     image: placeholder

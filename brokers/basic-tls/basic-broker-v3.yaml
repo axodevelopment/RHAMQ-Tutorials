@@ -18,7 +18,7 @@ spec:
       peer.group: jdbc-ha
     requireLogin: true
     persistenceEnabled: true
-    journalType: nio
+    journalType: aio
     messageMigration: true
     enableMetricsPlugin: true
     resources:
