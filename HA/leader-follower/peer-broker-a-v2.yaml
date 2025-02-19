@@ -1,0 +1,72 @@
+apiVersion: broker.amq.io/v1beta1
+kind: ActiveMQArtemis
+metadata:
+  name: peer-broker-a
+  namespace: peer-broker-a
+spec:
+  deploymentPlan:
+    size: 1
+    clustered: false
+    persistenceEnabled: false
+    labels:
+      peer.group: jdbc-ha
+    livenessProbe:
+      exec:
+        command:
+        - test
+        - -f
+        - /home/jboss/amq-broker/lock/cli.lock
+  env:
+    - name: ARTEMIS_EXTRA_LIBS
+      value: '/amq/init/config/extra-libs'
+  brokerProperties:
+    - 'criticalAnalyser=false'
+    - 'storeConfiguration=DATABASE'
+    - 'storeConfiguration.jdbcDriverClassName=oracle.jdbc.OracleDriver'
+    - 'storeConfiguration.jdbcConnectionUrl=jdbc:oracle:thin:SYSTEM/secret@oracle-database-service.oracle-db-amq.svc.cluster.local:1521/FREEPDB1'
+    - 'storeConfiguration.jdbcLockRenewPeriodMillis=2000'
+    - 'storeConfiguration.jdbcLockExpirationMillis=6000'
+    - 'HAPolicyConfiguration=SHARED_STORE_PRIMARY'
+    - >-
+      AMQPConnections.dr.uri=tcp://broker-dr-all-0-svc.dr.svc.cluster.local:61616
+    - AMQPConnections.dr.retryInterval=5000
+    - AMQPConnections.dr.user=admin
+    - AMQPConnections.dr.password=admin
+    - AMQPConnections.dr.connectionElements.mirror.type=MIRROR
+    - >-
+      AMQPConnections.dr.connectionElements.mirror.messageAcknowledgements=true
+    - AMQPConnections.dr.connectionElements.mirror.queueCreation=true
+    - AMQPConnections.dr.connectionElements.mirror.queueRemoval=true
+  acceptors:
+  - name: ext-acceptor
+    protocols: CORE
+    port: 61626
+    expose: true
+    sslEnabled: true
+    sslSecret: ext-amqp-acceptor-ssl-secret
+  - name: amqp-acceptor
+    protocols: AMQP
+    port: 5672
+    expose: true
+    sslEnabled: true
+    sslSecret: ext-amqp-acceptor-ssl-secret
+  console:
+    expose: true
+  resourceTemplates:
+    - selector:
+        kind: StatefulSet
+      patch:
+        kind: StatefulSet
+        spec:
+          template:
+            spec:
+              initContainers:
+                - name: oracle-database-jdbc-driver-init
+                  image: registry.redhat.io/amq7/amq-broker-rhel8:7.12
+                  volumeMounts:
+                    - name: amq-cfg-dir
+                      mountPath: /amq/init/config
+                  command:
+                    - "bash"
+                    - "-c"
+                    - "mkdir -p /amq/init/config/extra-libs && curl -Lo /amq/init/config/extra-libs/ojdbc11.jar https://download.oracle.com/otn-pub/otn_software/jdbc/233/ojdbc11.jar"

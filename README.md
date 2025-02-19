@@ -9,3 +9,7 @@ This will cover the basics of creating an AMQ Broker without authentication.
 The next section would be /brokers/basic-auth
 
 Aftewards for TLS refer to /brokers/basic-tls.
+
+
+# reference documents
+https://access.redhat.com/articles/2791941
