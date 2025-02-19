@@ -4,14 +4,15 @@ Hopefully after following the next steps you'll be able to setup and understand 
 
 ## Table of Contents
 
-1. [Prerequisites](#prerequisites)  
-2. [Create OpenShift Projects](#1-create-openshift-projects)  
-3. [Set Up Permissions](#2-setup-oracle-permissions)  
-4. [Database Account Setup](#3-database-setup)  
-5. [Deploy the Oracle Database](#4-deploy-the-oracle-database)   
-6. [Prepare TLS Certificates](#5-certs)  
-7. [Deploy the Peer Brokers](#6-deploying-the-peer-brokers)  
-8. [Additional Notes](#additional-notes)  
+   [Prerequisites](#prerequisites)
+   [Summary](#summary)
+   [Diagrams](#diagrams)  
+1. [Create OpenShift Projects](#1-create-openshift-projects)  
+2. [Set Up Permissions](#2-setup-oracle-permissions)  
+3. [Database Account Setup](#3-database-setup)  
+4. [Deploy the Oracle Database](#4-deploy-the-oracle-database)   
+5. [Prepare TLS Certificates](#5-certs)  
+6. [Deploy the Peer Brokers](#6-deploying-the-peer-brokers)    
 
 ---
 
@@ -22,6 +23,19 @@ Hopefully after following the next steps you'll be able to setup and understand 
 - Basic familiarity with OpenShift projects, ServiceAccounts, and Secrets  
 - Oracle database image or a container image that can be used in OpenShift  
 - (Optional) Existing TLS certificates. Otherwise, you can generate or fetch sample certificates.  
+
+---
+
+
+## Summary
+
+We are setting up a leader-follower architecture for ActiveMQ Artemis brokers that share a lock on a single Oracle database, ensuring only one active broker at a time. These instructions walk through creating and configuring OpenShift projects, securing them via ServiceAccounts and SCCs, and deploying the Oracle DB. After the database initializes, TLS certificates are prepared so that the brokers can communicate securely. Finally, the peer brokers are deployed in a way that one broker becomes active while the others remain on standby, awaiting failover if the leader goes offline.
+
+---
+
+## Diagrams
+
+
 
 ---
 
