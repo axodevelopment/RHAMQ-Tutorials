@@ -60,7 +60,7 @@ in east broker => ''AMQPConnections.target.uri=tcp://broker-west-all-0-svc.amq-w
 
 ie west broker federates (connects to west) and vise versa
 
-
+you should see in the logs
 *******************************************************************************************************************************
 Connected on Server AMQP Connection target on broker-west-all-0-svc.amq-west.svc.cluster.local:61616 after 9 retries
 *******************************************************************************************************************************
