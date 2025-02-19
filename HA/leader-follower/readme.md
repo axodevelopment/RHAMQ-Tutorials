@@ -6,7 +6,10 @@ Hopefully after following the next steps you'll be able to setup and understand 
 
    [Prerequisites](#prerequisites)
    [Summary](#summary)
-   [Diagrams](#diagrams)  
+   [Diagrams](#diagrams)
+
+Steps to deploy peer brokers:
+
 1. [Create OpenShift Projects](#1-create-openshift-projects)  
 2. [Set Up Permissions](#2-setup-oracle-permissions)  
 3. [Database Account Setup](#3-database-setup)  
@@ -271,7 +274,13 @@ AMQ221007: Server is now active
 ```
 This indicates the broker that obtained the lock is now the leader (active)
 
+Also can check the oracle database
+oc rsh -n oracle-db-amq oracle-db-0 sqlplus SYSTEM/secret@localhost:1521/FREEPDB1
 
+SELECT table_name FROM user_tables;
+
+SELECT * FROM MESSAGES;
+SELECT COUNT(*) FROM MESSAGES;
 
 
 # notes You can ignore this section, it will be removed when I finalize this page.

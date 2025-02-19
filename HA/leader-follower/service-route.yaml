@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata: 
   name: ext-acceptor-svc
-  namespace: peer-broker-a
+  namespace: peer-broker
 spec:
   ports:
     - name: core
@@ -23,7 +23,7 @@ apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   name: ext-acceptor-svc-rte
-  namespace: peer-broker-a
+  namespace: peer-broker
 spec:
   port:
     targetPort: 61626
@@ -38,58 +38,7 @@ apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   name: amqp-acceptor-svc-rte
-  namespace: peer-broker-a
-spec:
-  port:
-    targetPort: amqp
-  tls:
-    termination: passthrough 
-    insecureEdgeTerminationPolicy: None 
-  to:
-    kind: Service
-    name: ext-acceptor-svc
----
-apiVersion: v1
-kind: Service
-metadata: 
-  name: ext-acceptor-svc
-  namespace: peer-broker-a
-spec:
-  ports:
-    - name: core
-      protocol: TCP
-      port: 61626
-      targetPort: 61626
-    - name: amqp
-      protocol: TCP
-      port: 5672
-      targetPort: 5672
-  selector:
-    peer.group: jdbc-ha
-  type: ClusterIP
-  sessionAffinity: None
-  publishNotReadyAddresses: true
----
-apiVersion: route.openshift.io/v1
-kind: Route
-metadata:
-  name: ext-acceptor-svc-rte
-  namespace: peer-broker-a
-spec:
-  port:
-    targetPort: 61626
-  tls:
-    termination: passthrough 
-    insecureEdgeTerminationPolicy: None 
-  to:
-    kind: Service
-    name: ext-acceptor-svc
----
-apiVersion: route.openshift.io/v1
-kind: Route
-metadata:
-  name: amqp-acceptor-svc-rte
-  namespace: peer-broker-a
+  namespace: peer-broker
 spec:
   port:
     targetPort: amqp
