@@ -5,8 +5,8 @@ Hopefully after following the next steps you'll be able to setup and understand 
 ## Table of Contents
 
 1. [Prerequisites](#prerequisites)  
-2. [Create OpenShift Projects](#create-openshift-projects)  
-3. [Set Up Permissions](#set-up-permissions)  
+2. [Create OpenShift Projects](#1-create-openshift-projects)  
+3. [Set Up Permissions](#2-setup-oracle-permissions)  
 4. [Database Account Setup](#database-account-setup)  
 5. [Deploy the Oracle Database](#deploy-the-oracle-database)  
 6. [Wait for DB Initialization](#wait-for-db-initialization)  
@@ -34,6 +34,39 @@ Create two new projects (namespaces) on your OpenShift cluster for the Oracle da
 oc new-project oracle-db-amq
 oc new-project peer-broker
 ```
+
+---
+
+## 2. Setup Oracle Permissions
+
+An Oracle DB like most others needs elevated permissions.
+
+1.) Create a service account for Oracle (oracle-sa):
+
+```bash
+oc create serviceaccount oracle-sa -n oracle-db-amq
+```
+
+2.) Grant permissions to run the Oracle container
+```bash
+oc adm policy add-scc-to-user anyuid -z oracle-sa -n oracle-db-amq
+oc adm policy add-scc-to-user anyuid -z oracle-sa
+```
+
+3.) (Optional) Confirm the service account has permission to use the anyuid SCC:
+```bash
+oc adm policy who-can use scc anyuid
+...
+###
+system:serviceaccount:oracle-db-amq:oracle-sa
+```
+
+
+
+
+
+
+
 
 # leader-follower
 
