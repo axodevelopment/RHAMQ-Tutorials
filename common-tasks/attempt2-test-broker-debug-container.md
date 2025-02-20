@@ -39,7 +39,7 @@ keytool -import -v -alias ca -file /tmp/amq-test/ssl/server.crt \
   --destination myQueue
 
 NOTE:
-need route if passthrough
+need route if testing passthrough
 
   /apache-artemis-2.31.2/bin/artemis producer \
   --protocol amqp \
