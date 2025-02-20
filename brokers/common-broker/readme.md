@@ -1,19 +1,44 @@
-what we want to achieve
+# Leader-Follower AMQ Broker Example
 
-create certs or use your own
+Hopefully after following the next steps you'll be able to setup and understand a Leader-Follower broker configuration.
 
-create secret from cert
+## Table of Contents
 
-deploy broker
+   [Prerequisites](#prerequisites)
+   [Summary](#summary)
+   [Diagrams](#diagrams)
 
-test external passthrough
+Steps to deploy peer brokers:
 
-test internal tls through debug pod
+1. [Create Certs](#create-certs--build-truststore)  
+2. [Deploy Broker](#deploy-broker)  
+3. [Test internal TLS](#test-internal-tls)   
 
 ---
 
-# Pre req
+## Prerequisites
+
+- OpenShift CLI (oc)  
+- Access to an OpenShift cluster  
+- Basic familiarity with OpenShift projects, ServiceAccounts, and Secrets  
+- Oracle database image or a container image that can be used in OpenShift  
+- (Optional) Existing TLS certificates. Otherwise, you can generate or fetch sample certificates.  
+
+```bash
 oc new-project common-broker
+```
+
+---
+
+
+## Summary
+
+what we want to achieve
+create certs or use your own
+create secret from cert
+deploy broker
+test external passthrough
+test internal tls through debug pod
 
 ---
 
