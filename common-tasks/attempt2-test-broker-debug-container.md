@@ -1,5 +1,7 @@
 # on your machine (term1)
 
+oc get route
+
 oc get secret amqp-acceptor-ptls -n amq-broker -o jsonpath='{.data.tls\.crt}' | base64 -d > server.crt
 
 # on another terminal (term2)
@@ -34,4 +36,13 @@ keytool -import -v -alias ca -file /tmp/amq-test/ssl/server.crt \
   --protocol amqp \
   --url "amqps://broker-amqp-acceptor-0-svc.amq-broker.svc:5672?transport.trustStoreType=PKCS12&transport.trustStoreLocation=/tmp/amq-test/ssl/truststore.p12&transport.trustStorePassword=securepass&transport.verifyHost=false&sslEnabled=true" \
   --message "Test SSL Message via Service" \
+  --destination myQueue
+
+NOTE:
+need route if passthrough
+
+  /apache-artemis-2.31.2/bin/artemis producer \
+  --protocol amqp \
+  --url "amqps://<route>:443?transport.trustStoreType=PKCS12&transport.trustStoreLocation=/tmp/amq-test/ssl/truststore.p12&transport.trustStorePassword=securepass&transport.verifyHost=false&sslEnabled=true" \
+  --message "Test SSL Message via Route" \
   --destination myQueue
