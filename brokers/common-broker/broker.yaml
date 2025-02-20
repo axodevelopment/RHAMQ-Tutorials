@@ -2,7 +2,7 @@ apiVersion: broker.amq.io/v1beta1
 kind: ActiveMQArtemis
 metadata:
   name: broker
-  namespace: amq-ss-broker
+  namespace: common-broker
 spec:
   env:
     - name: JAVA_ARGS_APPEND
@@ -27,6 +27,22 @@ spec:
         memory: 512Mi
     storage:
       size: "4Gi"
+    livenessProbe:
+      exec:
+        command:
+        - test
+        - -f
+        - /home/jboss/amq-broker/lock/cli.lock
+    affinity:
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+                - key: ActiveMQArtemis
+                  operator: In
+                  values:
+                    - broker
+            topologyKey: "kubernetes.io/hostname"
   console:
     expose: true
   acceptors:

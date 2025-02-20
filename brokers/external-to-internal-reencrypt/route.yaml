@@ -4,7 +4,9 @@ metadata:
   name: extern-amqp-rte
   namespace: amq-ss-broker
   haproxy.router.openshift.io/timeout: 300s
+  haproxy.router.openshift.io/strict-sni: "true"
 spec:
+  host: extern-amqp-rte-amq-ss-broker.apps.axolab.axodevelopment.dev
   port:
     targetPort: amqp-acceptor-0
   tls:
@@ -31,6 +33,7 @@ spec:
       AIgOAxqzILALF7YLhLV3aK5a4OeA4QP5T/GpNBBL2WH15Q4Cs8MHItojXfYY5YnS
       rwXv/3g1n+kKi0AGpiZIC4e9v21RA5sT2Gu6GRu0
       -----END CERTIFICATE-----
+    insecureEdgeTerminationPolicy: None
   to:
     kind: Service
     name: broker-amqp-acceptor-0-svc
