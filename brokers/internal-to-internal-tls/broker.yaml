@@ -30,12 +30,14 @@ spec:
   console:
     expose: true
   acceptors:
-    - name: amqp
+    - name: amqp-acceptor
       port: 5672
       protocols: 'CORE,AMQP,STOMP,HORNETQ,MQTT,OPENWIRE'
+      expose: true
       sslEnabled: true
-      sslSecret: amq-broker-amqp-secret
+      sslSecret: amqp-acceptor-ptls
   brokerProperties:
+    - "acceptorConfigurations.amqp-acceptor.params.sslAutoReload=true"
     - "# Enable auto-creation of queues"
     - addressSettings."#".autoCreateQueues=true
     - addressSettings."#".autoCreateAddresses=true
@@ -49,3 +51,9 @@ spec:
     - addressSettings."myQueue".deadLetterAddress=DLQ
     - addressSettings."myQueue".expiryAddress=ExpiryQueue
     - addressSettings."myQueue".maxDeliveryAttempts=3
+  resourceTemplates:
+    - selector:
+        kind: Service
+        name: broker-amqp-acceptor-0-svc
+      annotations:
+        service.beta.openshift.io/serving-cert-secret-name: amqp-acceptor-ptls
