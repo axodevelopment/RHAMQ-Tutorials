@@ -1,0 +1,36 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: extern-amqp-rte
+  namespace: amq-ss-broker
+  haproxy.router.openshift.io/timeout: 300s
+spec:
+  port:
+    targetPort: amqp-acceptor-0
+  tls:
+    termination: reencrypt
+    destinationCACertificate: | 
+      -----BEGIN CERTIFICATE-----
+      MIIDejCCAmKgAwIBAgIJAJxBM/fzkdHrMA0GCSqGSIb3DQEBCwUAMGsxCzAJBgNV
+      BAYTAnJoMRAwDgYDVQQIEwdyZWQgaGF0MRAwDgYDVQQHEwdyZWQgaGF0MRAwDgYD
+      VQQKEwdyZWQgaGF0MRAwDgYDVQQLEwdyZWQgaGF0MRQwEgYDVQQDEwttaWtlIHdp
+      bHNvbjAeFw0yNTAyMjAwMzUyMDVaFw0yNTA1MjEwMzUyMDVaMGsxCzAJBgNVBAYT
+      AnJoMRAwDgYDVQQIEwdyZWQgaGF0MRAwDgYDVQQHEwdyZWQgaGF0MRAwDgYDVQQK
+      EwdyZWQgaGF0MRAwDgYDVQQLEwdyZWQgaGF0MRQwEgYDVQQDEwttaWtlIHdpbHNv
+      bjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAKol8z4YQJHDFwRHftkW
+      7X8Ni/yjR9pWMhkIcT1+i4iGN0RD5e/EHsQiHySOzqM5JonJJDPNmfZeIb966ttA
+      mITgb6mINvwNYRp4Fa0jwBVsKwjR155Jnag6vwHbVWJg+ajK26Yig2ov0E7aAXap
+      EXT3nBVOeQqx76oUW4CiUF8bOEp4HTtY8CW0gR9c1P74984EVuA1KrvKOly7fRKT
+      TUOa0Dl7PTL1N9xZrABwYP/8pfmgpVo9q+BGonuQIVAHT6f9JPNDC1E9b/bz30jk
+      k16CJJi61eQZhnGAjp3CZbmZ57JEEieLGLsHOA7f45nHcdGQYWoR7zlvAqgyYkOr
+      M/UCAwEAAaMhMB8wHQYDVR0OBBYEFPkl6F9B22WqCUQG65yCVSq+r+pLMA0GCSqG
+      SIb3DQEBCwUAA4IBAQBqewNU6EXtmGk9ktAmZV4wWo5XGf65M+CnOawiEjDss2kD
+      BQVhAtnm+xUfUUWKMbp3Dup6+DIhZwUrzxoKO+qG59nVhXFDoNwsbmmyr4BIWS0r
+      olbCOlDigvlTngzbxD8HoDdY/aIL+cTkDul3ci0DpC+NgTvnZiQN+1M2TNNbZAWl
+      RZmIWxKR0+ZyYF5ZXS6wDqmvC8VKH1XaocnV8HT9b88I5wiI91kBmtXWQ3z6hwMA
+      AIgOAxqzILALF7YLhLV3aK5a4OeA4QP5T/GpNBBL2WH15Q4Cs8MHItojXfYY5YnS
+      rwXv/3g1n+kKi0AGpiZIC4e9v21RA5sT2Gu6GRu0
+      -----END CERTIFICATE-----
+  to:
+    kind: Service
+    name: broker-amqp-acceptor-0-svc

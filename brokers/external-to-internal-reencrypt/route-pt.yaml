@@ -1,0 +1,14 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: extern-amqp-rte-pass
+  namespace: amq-ss-broker
+spec:
+  port:
+    targetPort: amqp-acceptor-0
+  tls:
+    termination: passthrough 
+    insecureEdgeTerminationPolicy: None 
+  to:
+    kind: Service
+    name: broker-amqp-acceptor-0-svc
