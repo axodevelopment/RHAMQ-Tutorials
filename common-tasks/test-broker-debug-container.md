@@ -1,3 +1,7 @@
+# Debug Broker Example Steps
+
+As Admons you may want to easily test if the broker is working if you don't have access to various apps, these steps allow you to debug from a pod so you don't have to build a custom app or expose other tooling which you may not want to do.
+
 # on your machine (term1)
 
 oc get route

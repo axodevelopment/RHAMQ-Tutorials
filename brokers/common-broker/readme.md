@@ -49,11 +49,13 @@ test internal tls through debug pod
 
 Create a directory for your tls cert work
 
+```bash
 wget -O server-keystore.jks https://github.com/apache/activemq-artemis/raw/main/tests/security-resources/server-keystore.jks
 
 wget -O server-ca-truststore.jks https://github.com/apache/activemq-artemis/raw/main/tests/security-resources/server-ca-truststore.jks
 
 wget -O client-ca-truststore.jks https://github.com/apache/activemq-artemis/raw/main/tests/security-resources/client-ca-truststore.jks
+```
 
 Note:
 You should have 3 files
@@ -102,29 +104,70 @@ You should have 3 files
 -cs-client-truststore.jks
 
 Now we can create the new combined-truststore.jks
+Note:
+Based upon your JDK, the deststoretype will default to different values, here to maintain consistency we will use JKS so the deststoretype flag of JKS is used, but if you are using PKCS the steps are similar.
 
+Add the server ks
+```bash
 keytool -importkeystore \
   -srckeystore cs-server-keystore.jks \
   -destkeystore combined-truststore.jks \
   -srcstorepass securepass \
   -deststorepass securepass \
   -deststoretype JKS
+```
 
+Add the client t
+```bash
 keytool -importkeystore \
   -srckeystore cs-client-truststore.jks \
   -destkeystore combined-truststore.jks \
   -srcstorepass securepass \
   -deststorepass securepass \
   -deststoretype JKS
+```
 
 check if everything is correct
 keytool -list -v -keystore combined-truststore.jks -storepass securepass
+
+Note:
+If you are following this step by step the combined-truststore.jks should have 3 entries.  If you are doing a self signed cert or otherwise another set of certs you'll need to inspect the combined-truststore equivalent of yours to ensure they entries are present.  Again, the client details in my case are simply there for brevity, AMQ will present the server.ks crt files for authentication.
 
 ---
 
 # Deploy Broker
 
 oc apply -f broker.yaml
+
+Wait until the broker finishes rolling out and is running.
+
+```bash
+oc get pods -w
+```
+
+note in brocker.yaml
+```bash
+    acceptors
+      - name: amqp-acceptor <--
+        sslEnabled: true
+        sslSecret: amqp-acceptor-secret  
+```
+
+Lets get the route we are using...
+```bash
+oc get route | grep amqp-acceptor
+```
+
+broker-amqp-acceptor-0-svc-rte-common-broker.apps.cluster.domain
+
+In my case:
+broker-amqp-acceptor-0-svc-rte-common-broker.apps.axolab.axodevelopment.dev
+
+<broker.metadata.name>-<acceptor.name>-<ordinal>-svc-rte-<broker.metadata.namespace>...
+
+Ok so we now have a broker lets test it.
+
+
 
 You should see the cert you added to the broker being presented in your browser if you navigate to the route in 
 oc get route
