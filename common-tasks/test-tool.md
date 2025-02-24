@@ -36,9 +36,3 @@ bin/artemis producer \
   --url "amqps://broker-amqp-acceptor-0-svc.common-broker.svc:5672?transport.trustStoreType=PKCS12&transport.trustStoreLocation=/tmp/amq-test/ssl/truststore.p12&transport.trustStorePassword=securepass&transport.verifyHost=false&sslEnabled=true" \
   --message "Test SSL Message via Service" \
   --destination myQueue
-
-
-
-bin/artemis queue stat \
-  --protocol amqp \
-  --url "amqps://broker-amqp-acceptor-0-svc.common-broker.svc:5672?transport.trustStoreType=PKCS12&transport.trustStoreLocation=/tmp/amq-test/ssl/truststore.p12&transport.trustStorePassword=securepass&transport.verifyHost=false&sslEnabled=true"
