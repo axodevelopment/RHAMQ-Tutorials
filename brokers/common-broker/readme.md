@@ -179,66 +179,8 @@ broker-amqp-acceptor-0-svc-rte-common-broker.apps...
 
 # Test internal TLS
 
-Ideally you will need to have two terminals now known as term1 and term2
+I have moved this over to another location in the repo...
 
-@@@ WARNING / NOTE @@@
-If you have an RHACS product that is enforcing a baseline this pod may get killed early since we are going to be dyn building a pod...
+Please refer to test-tool.md
 
-@@@ WARNING / NOTE @@@
-Depending on firewall setup from OCP to internet this may also not work but it gives you an idea of how to build a container for debugging
-
-# on your machine (term1)
-
-oc get route
-
-Since we already have cs-server-keystore.jks lets get the crt file from that.
-
-keytool -exportcert \
-  -keystore cs-server-keystore.jks \
-  -alias server \
-  -storepass securepass \
-  -file server.crt \
-  -rfc
-
-# on another terminal (term2)
-
-oc debug -n common-broker --image=registry.access.redhat.com/ubi8/ubi-minimal
-
-microdnf install -y nmap-ncat bind-utils java-17-openjdk wget tar gzip
-
-mkdir -p /tmp/amq-test/ssl
-
-wget https://archive.apache.org/dist/activemq/activemq-artemis/2.31.2/apache-artemis-2.31.2-bin.tar.gz
-
-tar xzf apache-artemis-2.31.2-bin.tar.gz
-
-# on your machine (term1)
-
-oc get pods | grep debug
-
-oc cp server.crt common-broker/<debug-pod-name>:/tmp/amq-test/ssl/
-
-oc cp server.crt common-broker/image-debug-2ls9n:/tmp/amq-test/ssl/
-
-# on another terminal (term2)
-
-keytool -import -v -alias ca -file /tmp/amq-test/ssl/server.crt \
-  -keystore /tmp/amq-test/ssl/truststore.p12 \
-  -storetype PKCS12 \
-  -storepass securepass \
-  -noprompt
-
-/apache-artemis-2.31.2/bin/artemis producer \
-  --protocol amqp \
-  --url "amqps://broker-amqp-acceptor-0-svc.common-broker.svc:5672?transport.trustStoreType=PKCS12&transport.trustStoreLocation=/tmp/amq-test/ssl/truststore.p12&transport.trustStorePassword=securepass&transport.verifyHost=false&sslEnabled=true" \
-  --message "Test SSL Message via Service" \
-  --destination myQueue
-
-NOTE:
-need route if testing passthrough
-
-  /apache-artemis-2.31.2/bin/artemis producer \
-  --protocol amqp \
-  --url "amqps://<route>:443?transport.trustStoreType=PKCS12&transport.trustStoreLocation=/tmp/amq-test/ssl/truststore.p12&transport.trustStorePassword=securepass&transport.verifyHost=false&sslEnabled=true" \
-  --message "Test SSL Message via Route" \
-  --destination myQueue
+https://github.com/axodevelopment/RHAMQ-Tutorials/blob/main/common-tasks/test-tool.md
