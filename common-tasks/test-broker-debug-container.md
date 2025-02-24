@@ -2,6 +2,58 @@
 
 As Admons you may want to easily test if the broker is working if you don't have access to various apps, these steps allow you to debug from a pod so you don't have to build a custom app or expose other tooling which you may not want to do.
 
+I have attached the Dockerfile in this repo it is a peer to this document.  For quick reference here is the breakdown of that file.
+
+```bash
+FROM registry.access.redhat.com/ubi8/ubi-minimal
+
+USER root
+
+ENV ARTEMIS_VERSION=2.31.2 \
+    ARTEMIS_HOME=/opt/apache-artemis \
+    JAVA_HOME=/usr/lib/jvm/jre-17
+
+RUN microdnf update -y && \
+    microdnf install -y \
+    nmap-ncat \
+    bind-utils \
+    java-17-openjdk \
+    wget \
+    tar \
+    gzip \
+    && microdnf clean all \
+    && rm -rf /var/cache/yum
+
+RUN mkdir -p /opt \
+    /tmp/amq-test/ssl
+
+RUN wget https://archive.apache.org/dist/activemq/activemq-artemis/${ARTEMIS_VERSION}/apache-artemis-${ARTEMIS_VERSION}-bin.tar.gz -O /tmp/artemis.tar.gz && \
+    tar -xzf /tmp/artemis.tar.gz -C /opt && \
+    mv /opt/apache-artemis-${ARTEMIS_VERSION} ${ARTEMIS_HOME} && \
+    rm -f /tmp/artemis.tar.gz
+
+ENV PATH="${ARTEMIS_HOME}/bin:${PATH}"
+
+RUN chown -R 1001:0 ${ARTEMIS_HOME} /tmp/amq-test && \
+    chmod -R g=u ${ARTEMIS_HOME} /tmp/amq-test
+
+USER 1001
+
+WORKDIR ${ARTEMIS_HOME}
+
+CMD ["sleep", "infinity"]
+```
+
+In short, I am downloading amq-artemis, installing it and making it available to call.
+
+The goal here being that when I run this as a debug pod, I have access to artemis and items like keytool so that I can run certain utilities with artemis and ultimate push some test messages to our AMQ Broker.
+
+At a high level, we will need 2 terminals.
+
+On terminal (term1) we will have access to any 
+On one terminal we will be running the oc debug command which gives us a bash entry to the debug pod.
+
+
 # on your machine (term1)
 
 oc get route
