@@ -24,10 +24,13 @@ Steps to deploy peer brokers:
 - Oracle database image or a container image that can be used in OpenShift  
 - (Optional) Existing TLS certificates. Otherwise, you can generate or fetch sample certificates.  
 
+We will need a truststore dir for this one so make a directory for your truststore.
+
 ```bash
 oc new-project common-broker
 ```
 
+While this command should default your poject to common-broker if you are working outside of this project please ensure the -n commands are used appropriately.
 ---
 
 
@@ -52,27 +55,51 @@ wget -O server-ca-truststore.jks https://github.com/apache/activemq-artemis/raw/
 
 wget -O client-ca-truststore.jks https://github.com/apache/activemq-artemis/raw/main/tests/security-resources/client-ca-truststore.jks
 
+Note:
+You should have 3 files
+-client-ca-truststore.jks
+-server-ca-truststore.jks
+-server-keystore.jks
+
 Note that these are infact JKS ks types
 keytool -list -v -keystore server-keystore.jks -storepass securepass
 
 note in brocker.yaml
-
+```bash
     acceptors
       - name: amqp-acceptor
         sslEnabled: true
         sslSecret: amqp-acceptor-secret  <--
+```
 
+Lets create the secret called "amqp-acceptor-secret"
+Note:
+If you are doing one-way TLS you may be asking what do I use for my client.ts.  In this case, OCP secrets require both a server ks and a client ts, you can just copy the server ks to create a ts, since this value won't be used.
+
+```bash
 oc create secret generic amqp-acceptor-secret \
 --from-file=broker.ks=server-keystore.jks \
 --from-file=client.ts=client-ca-truststore.jks \
 --from-literal=keyStorePassword=securepass \
 --from-literal=trustStorePassword=securepass
+```
 
 For a local truststore that we will use to test with
 
+Just for clarity we have the keystore already but im doing this step for clarity...
+```bash
 oc get secret amqp-acceptor-secret -n common-broker -o jsonpath='{.data.client\.ts}' | base64 -d > cs-client-truststore.jks
 
 oc get secret amqp-acceptor-secret -n common-broker -o jsonpath='{.data.broker\.ks}' | base64 -d > cs-server-keystore.jks
+```
+
+Note:
+You should have 3 files
+-client-ca-truststore.jks
+-server-ca-truststore.jks
+-server-keystore.jks
+-cs-server-keystore.jks
+-cs-client-truststore.jks
 
 Now we can create the new combined-truststore.jks
 

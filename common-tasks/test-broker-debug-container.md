@@ -26,7 +26,7 @@ oc cp server.crt amq-broker/image-debug-gjr5w:/tmp/amq-test/ssl/
 
 # on another terminal (term2)
 
-keytool -import -v -alias ca -file /tmp/amq-test/ssl/server.crt \
+keytool -import -v -alias ca -file /tmp/amq-test/ssl/server.pem \
   -keystore /tmp/amq-test/ssl/truststore.p12 \
   -storetype PKCS12 \
   -storepass securepass \
