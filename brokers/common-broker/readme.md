@@ -96,7 +96,7 @@ oc get secret amqp-acceptor-secret -n common-broker -o jsonpath='{.data.broker\.
 ```
 
 Note:
-You should have 3 files
+You should have 5 files
 -client-ca-truststore.jks
 -server-ca-truststore.jks
 -server-keystore.jks
@@ -128,7 +128,9 @@ keytool -importkeystore \
 ```
 
 check if everything is correct
+```bash
 keytool -list -v -keystore combined-truststore.jks -storepass securepass
+```
 
 Note:
 If you are following this step by step the combined-truststore.jks should have 3 entries.  If you are doing a self signed cert or otherwise another set of certs you'll need to inspect the combined-truststore equivalent of yours to ensure they entries are present.  Again, the client details in my case are simply there for brevity, AMQ will present the server.ks crt files for authentication.

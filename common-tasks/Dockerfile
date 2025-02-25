@@ -6,7 +6,7 @@ ENV ARTEMIS_VERSION=2.31.2 \
     ARTEMIS_HOME=/opt/apache-artemis \
     JAVA_HOME=/usr/lib/jvm/jre-17
 
-RUN microdnf update -y && \
+    RUN microdnf update -y && \
     microdnf install -y \
     nmap-ncat \
     bind-utils \
@@ -14,6 +14,7 @@ RUN microdnf update -y && \
     wget \
     tar \
     gzip \
+    openssl \
     && microdnf clean all \
     && rm -rf /var/cache/yum
 

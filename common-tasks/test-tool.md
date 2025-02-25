@@ -21,6 +21,7 @@ RUN microdnf update -y && \
     wget \
     tar \
     gzip \
+    openssl \
     && microdnf clean all \
     && rm -rf /var/cache/yum
 
@@ -58,7 +59,7 @@ On another terminal (term2) we will be running the oc debug command which gives 
 
 This will create a debug pod with that --image.  Note you will need to either build the docker image with your changes or pull it from my repo and push it to a repo your OCP environment has access to.
 ```bash
-oc debug -n common-broker --image=axodevelopment/artemistools:v1.0.0.0
+oc debug -n common-broker --image=axodevelopment/artemistools:v1.0.0.3
 ```
 
 # (term1)
@@ -78,6 +79,8 @@ oc get secret amqp-acceptor-secret -n common-broker -o jsonpath='{.data.broker\.
 ```
 
 These steps apply to a JKS type but ultimately if you have a PKCS ultimate again we just need an unencrypted PEM file
+
+Get the alias for the pem you want to pull
 
 # get pem crt out of jks
 ```bash
