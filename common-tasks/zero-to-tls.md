@@ -349,19 +349,31 @@ I'll use the alias here so I don't have to type as much (S, Skey, I, R).
 
 ### Prereq
 
+In my case, I put in the steps I did to create I.pem    R.pem    S.pem    Skey.pem, in the full-chain-cert-.md
+
 First step will be to create the ca-chain.pem, order matters.  You can of course simplify and optimize these steps but I want to be clear here as to what goes where:
 
 ```bash
-cat I R > ca-chain.pem
-cat S I R > server-full-chain.pem
+cat I.pem R.pem > ca-chain.pem
+cat S.pem I.pem R.pem > server-full-chain.pem
+```
+
+Lets confirm the I + R worked and S + I + R worked.  We should see the certs in order.
+
+```bash
+openssl crl2pkcs7 -nocrl -certfile ca-chain.pem | openssl pkcs7 -print_certs -text -noout
+openssl crl2pkcs7 -nocrl -certfile server-full-chain.pem | openssl pkcs7 -print_certs -text -noout
 ```
 
 ### Truststore
 
-Then we can create the truststore from that
+Then we can create the truststore from that, since our truststore is for Java we will be flipping the order here.
+
 
 ```bash
-keytool -import -file ca-chain.pem -alias ca-chain -trustcacerts -keystore truststore.pkcs12 -storepass securepass -storetype PKCS12
+keytool -import -file R.pem -alias root-ca -trustcacerts -keystore truststore.pkcs12 -storepass securepass -storetype PKCS12
+keytool -import -file I.pem -alias intermediate-ca -trustcacerts -keystore truststore.pkcs12 -storepass securepass -storetype PKCS12
+
 ```
 
 ### Broker keystore
@@ -369,7 +381,7 @@ keytool -import -file ca-chain.pem -alias ca-chain -trustcacerts -keystore trust
 Now lets build the keystore for the broker:
 
 ```bash
-openssl pkcs12 -export -inkey Skey -in server-full-chain.pem -out server-keystore.pkcs12 -name broker -password pass:securepass
+openssl pkcs12 -export -inkey Skey.pem -in server-full-chain.pem -out server-keystore.pkcs12 -name broker -password pass:securepass
 ```
 
 
@@ -377,7 +389,7 @@ openssl pkcs12 -export -inkey Skey -in server-full-chain.pem -out server-keystor
 
 We should see the appropriate values here...
 
-The keystore should show "PrivateKeyEntry" and a chain length of 3, while the truststore should show "trustedCertEntry".
+The keystore should show "PrivateKeyEntry" and a chain length of 3, while the truststore should show "trustedCertEntry" with 2 entries.
 
 ```bash
 keytool -list -v -keystore truststore.pkcs12 -storepass securepass -storetype PKCS12
@@ -443,3 +455,47 @@ AMQ221007: Server is now active
 Also check there are no errors displaying...
 
 ## With Evertyhing running Test the svc
+
+
+```bash
+oc get svc
+```
+
+part-url = broker-amqp-acceptor-0-svc
+
+This will help us build a url for the deub pod:
+
+```bash
+<protocol>://<part-url>.<namespace>.svc:<port>?transport.verifyHost=false&sslEnabled=false"
+"amqps://broker-amqp-acceptor-fc-0-svc.ssl-test-broker.svc:5673?transport.trustStoreType=PKCS12&transport.trustStoreLocation=/tmp/amq-test/ssl/truststore.p12&transport.trustStorePassword=securepass&transport.verifyHost=false&sslEnabled=true"
+```
+
+--url "amqps://broker-amqp-acceptor-fc-0-svc.ssl-test-broker.svc:5673?transport.trustStoreType=PKCS12&transport.trustStoreLocation=/tmp/amq-test/ssl/truststore.p12&transport.trustStorePassword=securepass&transport.verifyHost=false&sslEnabled=true"
+
+
+One more thing we want to copy the client.ts into debug pod
+```bash
+oc cp truststore.pkcs12 ssl-test-broker/image-debug-8rvv5:/tmp/amq-test/ssl/truststore.p12
+```
+
+### TERM2
+Now back to TERM2
+
+```bash
+ls /tmp/amq-test/ssl
+```
+
+See the cert
+```bash
+openssl s_client -connect broker-amqp-acceptor-fc-0-svc.ssl-test-broker.svc:5673 -showcerts
+```
+
+If everything prior is done correctly you should see 
+
+```bash
+bin/artemis producer \
+  --protocol amqp \
+  --url "amqps://broker-amqp-acceptor-fc-0-svc.ssl-test-broker.svc:5673?transport.trustStoreType=PKCS12&transport.trustStoreLocation=/tmp/amq-test/ssl/truststore.p12&transport.trustStorePassword=securepass&transport.verifyHost=false&sslEnabled=true" \
+  --message "Test Message via Service" \
+  --destination myQueue
+```

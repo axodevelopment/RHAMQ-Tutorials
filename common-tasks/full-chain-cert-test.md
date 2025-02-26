@@ -1,6 +1,4 @@
 
-# working dir
-/Users/michaelwilson/truststore/full-chain-t1
 
 # Root CA pk
 openssl genrsa -out rootca.key.pem 4096
