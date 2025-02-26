@@ -41,6 +41,7 @@ We want to only use the server pem / key to create a bad broker keystore
 
 cp server.test.redhat.com.cert.pem server.cert.pem
 
+this cert will have an alias of server
 openssl pkcs12 -export -inkey server.key.pem -in server.cert.pem -out server-only.pkcs12 -name server -passout pass:securepass
 
 we have the pkcs we want the jks
@@ -56,6 +57,10 @@ oc create secret generic amqp-acceptor-secret \
 --from-literal=keyStorePassword=securepass \
 --from-literal=trustStorePassword=securepass
 
-
+keytool -exportcert -rfc \
+  -keystore broker.ks \
+  -alias server \
+  -file server.pem \
+  -storepass securepass
 
 
