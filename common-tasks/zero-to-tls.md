@@ -116,7 +116,9 @@ Now back to TERM1
 
 By default the struture should be:
 
+```bash
 <broker.metadata.name>-<broker.spec.acceptors[].name>-<ord-cluster>-svc
+```
 
 If you are using the defaults
 
@@ -128,7 +130,9 @@ part-url = broker-amqp-acceptor-0-svc
 
 This will help us build a url for the deub pod:
 
+```bash
 <protocol>://<part-url>.<namespace>.svc:<port>?transport.verifyHost=false&sslEnabled=false
+```
 
 --url "amqps://broker-amqp-acceptor-0-svc.ssl-test-broker.svc:5672?transport.verifyHost=false&sslEnabled=false"
 
