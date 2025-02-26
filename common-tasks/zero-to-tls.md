@@ -11,10 +11,9 @@ Steps to deploy federated brokers:
 
 1. [Create OpenShift Projects](#1-create-openshift-projects-and-broker-deploy)  
 2. [Without SSL](#2-testing-the-endpoint-from-within-the-ocp-cluster)  
-3. [Test With SSL](#3-database-setup)  
-4. [Deploy the Oracle Database](#4-deploy-the-oracle-database)   
-5. [Prepare TLS Certificates](#5-certs)  
-6. [Deploy the Peer Brokers](#6-deploying-the-peer-brokers)    
+3. [Test With SSL](#3-testing-with-ssl---self-signed-single-the-endpoint-from-within-the-ocp-cluster)  
+4. [Test With SSL - Chain](#4-testing-with-ssl---full-chain-the-endpoint-from-within-the-ocp-cluster)   
+5. [Cert commands](#5-certs)  
 
 ---
 
@@ -162,7 +161,7 @@ Producer myQueue, thread=0 Elapsed time in milli second : 3986 milli seconds
 
 
 
-## 3. Testing (With SSL) the endpoint from within the OCP cluster 
+## 3. Testing (With SSL - Self Signed Single) the endpoint from within the OCP cluster 
 
 While you don't need to be on the project "ssl-test-broker".  For sake of tutorial lets make sure you are back on the core project.
 
@@ -209,6 +208,13 @@ On the client, create a client trust store that imports the broker certificate.
 ```bash
 keytool -import -alias broker -keystore client.ts -file broker_cert.pem
 ```
+
+Lets make sure these are PKCS format, most environments default that way
+
+```bash
+keytool -list -v -keystore broker.ks --storepass securepass
+```
+
 
 Now with these details we can create the secret in ocp:
 
@@ -308,3 +314,128 @@ bin/artemis producer \
   --message "Test Message via Service" \
   --destination myQueue
 ```
+
+
+## 4. Testing (With SSL - Full Chain) the endpoint from within the OCP cluster 
+
+First we should discover all certs we will need to make this work.  There will be a slight difference between the Client and Broker.  In this case, I am referring to 3 different certs which will make a full chain.
+
+There is a Server.pem Server.key.
+
+Note:
+While I am using .pem it can be .cer just cat to see if it is in pem format or not.
+
+Lets start with:
+
+```bash
+openssl x509 -in server.pem -text -noout
+
+openssl x509 -in server.pem -text -noout | grep -A 1 "Issuer:" && openssl x509 -in server.pem -text -noout | grep -A 1 "Subject:"
+```
+
+Since these (in this case) will return as we might discover we will have 3 certs and one of them with a key.
+
+
+S: server.cer (Server certificate)
+Skey: server.key (Private key)
+I: Intermediate.cer (Intermediate CA)
+R: ROOTCA.cer (Root CA)
+
+I'll use the alias here so I don't have to type as much (S, Skey, I, R).
+
+### Prereq
+
+First step will be to create the ca-chain.pem, order matters.  You can of course simplify and optimize these steps but I want to be clear here as to what goes where:
+
+```bash
+cat I R > ca-chain.pem
+cat S I R > server-full-chain.pem
+```
+
+### Truststore
+
+Then we can create the truststore from that
+
+```bash
+keytool -import -file ca-chain.pem -alias ca-chain -trustcacerts -keystore truststore.pkcs12 -storepass securepass -storetype PKCS12
+```
+
+### Broker keystore
+
+Now lets build the keystore for the broker:
+
+```bash
+openssl pkcs12 -export -inkey Skey -in server-full-chain.pem -out server-keystore.pkcs12 -name broker -password pass:securepass
+```
+
+
+### Lets test our stores first
+
+We should see the appropriate values here...
+
+The keystore should show "PrivateKeyEntry" and a chain length of 3, while the truststore should show "trustedCertEntry".
+
+```bash
+keytool -list -v -keystore truststore.pkcs12 -storepass securepass -storetype PKCS12
+
+keytool -list -v -keystore server-keystore.pkcs12 -storepass securepass -storetype PKCS12
+```
+
+### Deploment time
+
+Lets make a secret:
+
+Lets add a new acceptor
+```bash
+  acceptors:
+    - name: amqp-acceptor
+      port: 5672
+      protocols: all
+      sslEnabled: true
+      sslSecret: amqp-acceptor-secret
+      connectionsAllowed: 5
+    - name: amqp-acceptor-fc <--
+      port: 5672
+      protocols: all
+      sslEnabled: true
+      sslSecret: amqp-acceptor-secret-fc
+      connectionsAllowed: 5
+```
+
+Note we are creating a new secret with a new name
+
+```bash
+oc create secret generic amqp-acceptor-secret-fc \
+  --from-file=broker.ks=server-keystore.pkcs12 \
+  --from-file=client.ts=truststore.pkcs12 \
+  --from-literal=keyStorePassword=securepass \
+  --from-literal=trustStorePassword=securepass
+```
+
+Lets deploy the new broker.v3
+
+```bash
+oc apply -f ./refs/broker.v3.yaml
+```
+
+Wait for initialiation
+
+```bash
+oc get pods -w
+```
+
+Lets check the logs to make sure we have what we need:
+
+```bash
+oc logs broker-ss-0 --follow
+```
+
+You should see something like:
+
+```bash
+AMQ221007: Server is now active
+```
+
+Also check there are no errors displaying...
+
+## With Evertyhing running Test the svc
