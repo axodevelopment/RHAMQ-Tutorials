@@ -1,3 +1,5 @@
+# TODO: Not yet working may not be supported with HAProxy
+
 # Example broker using reencrypt-route
 
 This will be a general implementation of a Federated AMQ Broker setup.
