@@ -481,6 +481,7 @@ oc cp truststore.pkcs12 ssl-test-broker/image-debug-8rvv5:/tmp/amq-test/ssl/trus
 ### TERM2
 Now back to TERM2
 
+
 ```bash
 ls /tmp/amq-test/ssl
 ```
