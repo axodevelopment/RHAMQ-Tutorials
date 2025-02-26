@@ -57,6 +57,7 @@ spec:
     - name: amqp-acceptor-fc
       port: 5673
       protocols: all
+      expose: true
       sslEnabled: true
       sslSecret: amqp-acceptor-secret-fc
       connectionsAllowed: 5

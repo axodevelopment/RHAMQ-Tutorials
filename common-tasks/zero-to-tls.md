@@ -354,7 +354,7 @@ In my case, I put in the steps I did to create I.pem    R.pem    S.pem    Skey.p
 First step will be to create the ca-chain.pem, order matters.  You can of course simplify and optimize these steps but I want to be clear here as to what goes where:
 
 ```bash
-cat I.pem R.pem > ca-chain.pem
+cat I.pem R.pem > ca-chain.pem # you can keep this for developers but truststore operations will import one at a time.
 cat S.pem I.pem R.pem > server-full-chain.pem
 ```
 
