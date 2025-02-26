@@ -18,3 +18,6 @@ spec:
 ```
 
 This allows me to bind to the interface with port-forwarding to my terminal.
+
+Get the broker xml
+oc exec broker-ss-0 -- cat amq-broker/etc/broker.xml

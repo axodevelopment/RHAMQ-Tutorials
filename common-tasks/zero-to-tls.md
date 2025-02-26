@@ -164,21 +164,95 @@ Producer myQueue, thread=0 Elapsed time in milli second : 3986 milli seconds
 
 ## 3. Testing (With SSL) the endpoint from within the OCP cluster 
 
+While you don't need to be on the project "ssl-test-broker".  For sake of tutorial lets make sure you are back on the core project.
 
+Set project to ssl-test-broker:
 
+```bash
+oc project ssl-test-broker
+```
 
+note in brocker.yaml
 
+```bash
+  acceptors:
+    - name: amqp-acceptor
+      port: 5672
+      protocols: all
+      sslEnabled: true <--
+      sslSecret: amqp-acceptor-secret <--
+      connectionsAllowed: 5
+```
 
+### Lets build some certs
+I have noted the properties that will change with this to enable SSL.  Before we apply this broker however we want to create the certs.  To do that we will follow the steps in the Red Hat documentation for simplicity sake.
 
+That documentation is located here:
+https://docs.redhat.com/en/documentation/red_hat_amq_broker/7.12/html-single/deploying_amq_broker_on_openshift/index#proc-br-configuring-one-way-tls_broker-ocp
 
+NOTE: My environment defaults to PKCS12 and not JKS
 
+Generate a self-signed certificate for the broker key store.
 
+```bash
+keytool -genkey -alias broker -keyalg RSA -keystore broker.ks
+```
 
+Export the certificate from the broker key store, so that it can be shared with clients. Export the certificate in the Base64-encoded .pem format. For example:
 
+```bash
+keytool -export -alias broker -keystore broker.ks -file broker_cert.pem
+```
 
+On the client, create a client trust store that imports the broker certificate.
 
+```bash
+keytool -import -alias broker -keystore client.ts -file broker_cert.pem
+```
+
+Now with these details we can create the secret in ocp:
+
+```bash
+oc create secret generic amqp-acceptor-secret \
+--from-file=broker.ks=broker.ks \
+--from-file=client.ts=client.ts \
+--from-literal=keyStorePassword=securepass \
+--from-literal=trustStorePassword=securepass
+```
+
+### Now we can deploy the broker changes
+
+Create the broker (double check namespaces or use your own if you would like):
+
+```bash
+oc apply -f ./refs/broker.v2.yaml
+```
+
+Note: because we have modified the acceptor this does require the pod to be rebuilt / redeployed.
+
+Wait for initialiation
+
+```bash
+oc get pods -w
+```
+
+Lets check the logs to make sure we have what we need:
+
+```bash
+oc logs broker-ss-0 --follow
+```
+
+You should see something like:
+
+```bash
+AMQ221007: Server is now active
+```
+
+Also check there are no errors displaying...
 
 Now back to ### TERM1
+
+If you didn't close the debug pod skip ahead to the url building part its time to send messages...
 
 ### Get the debug pod name
 ```bash
@@ -188,4 +262,49 @@ oc get pods | grep debug
 Should look something like:
 image-debug-<uniqu>
 
-You'll need this for later
+
+By default the struture should be:
+
+```bash
+<broker.metadata.name>-<broker.spec.acceptors[].name>-<ord-cluster>-svc
+```
+
+If you are using the defaults
+
+```bash
+oc get svc
+```
+
+part-url = broker-amqp-acceptor-0-svc
+
+This will help us build a url for the deub pod:
+
+```bash
+<protocol>://<part-url>.<namespace>.svc:<port>?transport.verifyHost=false&sslEnabled=false"
+"amqps://broker-amqp-acceptor-0-svc.ssl-test-broker.svc:5672?transport.trustStoreType=PKCS12&transport.trustStoreLocation=/tmp/amq-test/ssl/truststore.p12&transport.trustStorePassword=securepass&transport.verifyHost=false&sslEnabled=true
+```
+
+--url "amqps://broker-amqp-acceptor-0-svc.ssl-test-broker.svc:5672?transport.trustStoreType=PKCS12&transport.trustStoreLocation=/tmp/amq-test/ssl/truststore.p12&transport.trustStorePassword=securepass&transport.verifyHost=false&sslEnabled=true"
+
+
+One more thing we want to copy the client.ts into debug pod
+```bash
+oc cp client.ts ssl-test-broker/image-debug-wwlvz:/tmp/amq-test/ssl/truststore.p12
+```
+
+### TERM2
+Now back to TERM2
+
+```bash
+ls /tmp/amq-test/ssl
+```
+
+openssl s_client -connect broker-amqp-acceptor-0-svc.ssl-test-broker.svc:5672 -showcerts
+
+```bash
+bin/artemis producer \
+  --protocol amqp \
+  --url "amqps://broker-amqp-acceptor-0-svc.ssl-test-broker.svc:5672?transport.trustStoreType=PKCS12&transport.trustStoreLocation=/tmp/amq-test/ssl/truststore.p12&transport.trustStorePassword=securepass&transport.verifyHost=false&sslEnabled=true" \
+  --message "Test Message via Service" \
+  --destination myQueue
+```

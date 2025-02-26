@@ -1,0 +1,70 @@
+apiVersion: broker.amq.io/v1beta1
+kind: ActiveMQArtemis
+metadata:
+  name: broker
+  namespace: ssl-test-broker
+spec:
+  env:
+    - name: JAVA_ARGS_APPEND
+      value: "-Dwebconfig.bindings.artemis.uri=http://0.0.0.0:8161 -Dartemis.acceptors.amqp.host=0.0.0.0"
+    - name: AMQ_EXTRA_ARGS
+      value: "--relax-jolokia"
+    - name: AMQ_ENABLE_METRICS_PLUGIN
+      value: "true"
+  #adminUser: admin
+  #adminPassword: admin
+  deploymentPlan:
+    size: 1
+    image: placeholder
+    persistenceEnabled: true
+    journalType: aio
+    messageMigration: true
+    enableMetricsPlugin: true
+    resources:
+      limits:
+        cpu: 500m
+        memory: 1024Mi
+      requests:
+        cpu: 250m
+        memory: 512Mi
+    storage:
+      size: "4Gi"
+    livenessProbe:
+      exec:
+        command:
+        - test
+        - -f
+        - /home/jboss/amq-broker/lock/cli.lock
+    affinity:
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+                - key: ActiveMQArtemis
+                  operator: In
+                  values:
+                    - broker
+            topologyKey: "kubernetes.io/hostname"
+  console:
+    expose: true
+  acceptors:
+    - name: amqp-acceptor
+      port: 5672
+      protocols: all
+      sslEnabled: true
+      sslSecret: amqp-acceptor-secret
+      connectionsAllowed: 5
+  brokerProperties:
+    - "# Enable auto-creation of queues"
+    - addressSettings."#".autoCreateQueues=true
+    - addressSettings."#".autoCreateAddresses=true
+    - "# Configure default address settings"
+    - addressSettings."#".defaultQueueRoutingType=ANYCAST
+    - addressSettings."#".defaultAddressRoutingType=ANYCAST
+    - "# Configure myQueue as anycast"
+    - addressConfigurations."myQueue".routingTypes=ANYCAST
+    - addressConfigurations."myQueue".queueConfigs."myQueue".routingType=ANYCAST
+    - "# Configure DLQ settings"
+    - addressSettings."myQueue".deadLetterAddress=DLQ
+    - addressSettings."myQueue".expiryAddress=ExpiryQueue
+    - addressSettings."myQueue".maxDeliveryAttempts=3
