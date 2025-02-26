@@ -57,7 +57,7 @@ Create the new projects (namespaces) on your OpenShift cluster:
 oc new-project ssl-test-broker
 ```
 
-note in brocker.yaml
+note in broker.yaml
 ```bash
   acceptors:
     - name: amqp-acceptor
@@ -171,7 +171,7 @@ Set project to ssl-test-broker:
 oc project ssl-test-broker
 ```
 
-note in brocker.yaml
+note in broker.yaml
 
 ```bash
   acceptors:
@@ -305,7 +305,11 @@ Now back to TERM2
 ls /tmp/amq-test/ssl
 ```
 
+See the cert
+```bash
 openssl s_client -connect broker-amqp-acceptor-0-svc.ssl-test-broker.svc:5672 -showcerts
+```
+
 
 ```bash
 bin/artemis producer \
@@ -395,7 +399,7 @@ Lets add a new acceptor
       sslSecret: amqp-acceptor-secret
       connectionsAllowed: 5
     - name: amqp-acceptor-fc <--
-      port: 5672
+      port: 5673
       protocols: all
       sslEnabled: true
       sslSecret: amqp-acceptor-secret-fc
