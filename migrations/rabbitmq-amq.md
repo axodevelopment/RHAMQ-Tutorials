@@ -2,14 +2,14 @@ Connection/Protocol Comparison:
 
 # Table 1: Protocol Modules (Log Entries)
 
-| Timestamp               | Module                    | Protocol Support |
-|-------------------------|---------------------------|------------------|
-| 2025-02-17 18:17:50,818 | artemis-server            | CORE             |
-| 2025-02-17 18:17:50,818 | artemis-amqp-protocol     | AMQP             |
-| 2025-02-17 18:17:50,819 | artemis-hornetq-protocol  | HORNETQ          |
-| 2025-02-17 18:17:50,819 | artemis-mqtt-protocol     | MQTT             |
-| 2025-02-17 18:17:50,819 | artemis-openwire-protocol | OPENWIRE         |
-| 2025-02-17 18:17:50,820 | artemis-stomp-protocol    | STOMP            |
+| Module                    | Protocol Support |
+|---------------------------|------------------|
+| artemis-server            | CORE             |
+| artemis-amqp-protocol     | AMQP             |
+| artemis-hornetq-protocol  | HORNETQ          |
+| artemis-mqtt-protocol     | MQTT             |
+| artemis-openwire-protocol | OPENWIRE         |
+| artemis-stomp-protocol    | STOMP            |
 
 # Table 2: Connection/Protocol Comparison
 
