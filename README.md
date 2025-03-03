@@ -34,13 +34,15 @@ We are setting up a Federated architecture for ActiveMQ Artemis brokers that...
 A tutorial covering Artemis / RH-AMQ
 
 
-To start please refer to /brokers/basic-broker
+To start please refer to `/brokers/basic-broker`
 
 This will cover the basics of creating an AMQ Broker without authentication.
 
-The next section would be /brokers/basic-auth
+The next section would be `/brokers/basic-auth`
 
-Aftewards for TLS refer to /brokers/basic-tls.
+Aftewards for TLS refer to `/brokers/basic-tls`
+
+If you want an end to end tutorial please of a broker with TLS passthrough and a route exposed please use `\common-tasks\zero-to-tls.md`
 
 
 # reference documents
@@ -50,7 +52,7 @@ https://access.redhat.com/articles/2791941
 
 # Basic Brokers
 
-High level examples of various types of brokers with different auth and settings are located in the "brokers" folder.
+High level examples of various types of brokers with different auth and settings are located in the `"brokers"` folder.
 
 | Name               | Description                    | Status           |
 |--------------------|--------------------------------|------------------|
@@ -65,7 +67,7 @@ High level examples of various types of brokers with different auth and settings
 
 # HA Configurations
 
-High level examples of HA implementations with different setups are located in the "HA" folder.
+High level examples of HA implementations with different setups are located in the `"HA"` folder.
 
 
 | Name               | Description                    | Status           |
@@ -77,7 +79,7 @@ High level examples of HA implementations with different setups are located in t
 
 # Common Tasks
 
-High level tutorials or walkthroughs on various types of tasks are located in the "common-tasks" folder.
+High level tutorials or walkthroughs on various types of tasks are located in the `"common-tasks"` folder.
 
 | Name               | Description                    | Status           |
 |--------------------|--------------------------------|------------------|
@@ -89,8 +91,9 @@ High level tutorials or walkthroughs on various types of tasks are located in th
 
 # Migrations
 
-High level thoughts or details on migrating from one system to AMQ are located in the "migrations" folder.
+High level thoughts or details on migrating from one system to AMQ are located in the `"migrations"`folder.
 
 | Name               | Description                    | Status           |
 |--------------------|--------------------------------|------------------|
 | rabbitmq           | Strategies for migration from RMQ | Early         |
+| client proto map           | Based upon my client and amq broker protocl mapping what url should you use. | Early         |

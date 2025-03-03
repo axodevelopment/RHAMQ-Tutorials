@@ -2,7 +2,7 @@
 
 ## Table 1: Client To Acceptor url
 
-It is important to distinguish 
+It is important to distinguish how your client protocol will behave with an acceptor.  If for example you set `protocols: all` your url format will need to be mapped accordingly.  In this repo, most protocols are assumed to be `amqp`.
 
 | Client Protocol | Details | AMQ Broker Acceptor Protocol | Protocol URL Format| Typical Port |
 |-----------------|---------|------------------------------|--------------------|--------------|
