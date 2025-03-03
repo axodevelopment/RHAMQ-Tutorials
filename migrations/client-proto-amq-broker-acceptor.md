@@ -4,7 +4,6 @@
 
 | Client Protocol | Details | AMQ Broker Acceptor Protocol | Protocol URL Format| Typical Port |
 |-----------------|---------|------------------------------|--------------------|--------------|
-
 | OpenWire (Non-SSL) | Used by OpenWire JMS clients  | OPENWIRE                            | tcp://host:61616                    | 61616        |
 | OpenWire (SSL)     | Secure OpenWire connection    | OPENWIRE with sslEnabled=true      | ssl://host:61617                    | 61617        |
 | Core (Non-SSL)     | Used by ActiveMQ Artemis Core clients | CORE                       | tcp://host:61616                    | 61616        |
