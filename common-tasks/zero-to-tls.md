@@ -500,3 +500,41 @@ bin/artemis producer \
   --message "Test Message via Service" \
   --destination myQueue
 ```
+
+
+## With Evertyhing running Test the route
+
+### Back to TERM1
+
+We need the route the acceptor created:
+```bash
+oc get route | grep amqp-acceptor-fc
+```
+
+Get the second entry which is the HOST/PORT entry
+
+Mine is: broker-amqp-acceptor-fc-0-svc-rte-ssl-test-broker.apps.axolab.axodevelopment.dev
+
+This would mean my url to use in the debug pod would be 
+
+NOTE: Do not copy your route will be different to your cluster...
+
+```bash
+-- url "amqps://broker-amqp-acceptor-fc-0-svc-rte-ssl-test-broker.apps.axolab.axodevelopment.dev:443?transport.trustStoreType=PKCS12&transport.trustStoreLocation=/tmp/amq-test/ssl/truststore.p12&transport.trustStorePassword=securepass&transport.verifyHost=false&sslEnabled=true"
+```
+
+### Back to TERM2
+
+Lets see the certs through the route
+
+```bash
+openssl s_client -connect broker-amqp-acceptor-fc-0-svc-rte-ssl-test-broker.apps.axolab.axodevelopment.dev:443 -showcerts
+```
+
+```bash
+bin/artemis producer \
+  --protocol amqp \
+  --url "amqps://broker-amqp-acceptor-fc-0-svc-rte-ssl-test-broker.apps.axolab.axodevelopment.dev:443?transport.trustStoreType=PKCS12&transport.trustStoreLocation=/tmp/amq-test/ssl/truststore.p12&transport.trustStorePassword=securepass&transport.verifyHost=false&sslEnabled=true" \
+  --message "Test Message via Service" \
+  --destination myQueue
+```
