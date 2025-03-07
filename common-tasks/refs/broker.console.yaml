@@ -5,6 +5,8 @@ metadata:
   namespace: ssl-test-broker
 spec:
   env:
+    - name: JAVA_ARGS_APPEND
+      value: "-Dwebconfig.bindings.artemis.uri=http://0.0.0.0:8161 -Dartemis.acceptors.amqp.host=0.0.0.0"
     - name: AMQ_EXTRA_ARGS
       value: "--relax-jolokia"
     - name: AMQ_ENABLE_METRICS_PLUGIN
