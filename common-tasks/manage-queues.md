@@ -136,6 +136,17 @@ Or you can manually create the address:
 
 ```
 
+That being said, unless needed, I would recommend using the default DLQ and ExpiryQueue. With that you would be just left with the configuration of:
+
+```bash
+    - "# Enable auto-creation of queues"
+    - addressSettings."#".autoCreateQueues=true
+    - addressSettings."#".autoCreateAddresses=true
+    - addressConfigurations."flifo".routingTypes=ANYCAST
+    - addressConfigurations."flifo".queueConfigs."flifo.actuals".routingType=ANYCAST
+    - addressConfigurations."flifo".queueConfigs."flifo.schedules".routingType=MULTICAST
+```
+
 ---
 
 
