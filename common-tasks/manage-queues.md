@@ -117,7 +117,7 @@ for the broker properties this maps to:
 
 When we look into console we see:
 
-![ConsoleView](https://github.com/axodevelopment/RHAMQ-Tutorials/blob/mainmain/images/address-status.jpg)
+![ConsoleView](https://github.com/axodevelopment/RHAMQ-Tutorials/blob/main/images/address-status.jpg)
 
 You might notice that while the main queues look right, that the `aDLQ` and `aExpiryQueue` are missing.  By default `DLQ` and `ExpiryQueue` are created but, if you want to rename them like we did above, you'll want to approach it one of two ways.  Either use autoCreateQeueu / Addresses or manually specify them.
 
