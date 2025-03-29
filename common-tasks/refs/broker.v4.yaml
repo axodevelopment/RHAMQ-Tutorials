@@ -62,6 +62,9 @@ spec:
       sslSecret: amqp-acceptor-secret-fc
       connectionsAllowed: 5
   brokerProperties:
+    - "# Enable auto-creation of queues"
+    - addressSettings."#".autoCreateQueues=true
+    - addressSettings."#".autoCreateAddresses=true
     - addressConfigurations."flifo".routingTypes=ANYCAST
     - addressConfigurations."flifo".queueConfigs."flifo.actuals".routingType=ANYCAST
     - addressConfigurations."flifo".queueConfigs."flifo.schedules".routingType=MULTICAST
