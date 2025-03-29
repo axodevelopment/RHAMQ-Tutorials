@@ -1,4 +1,4 @@
-# Zero to TLS - Managing Queues
+# Managing Queues
 
 
 ## Table of Contents
