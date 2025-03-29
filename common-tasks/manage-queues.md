@@ -3,8 +3,8 @@
 
 ## Table of Contents
 
-   [Prerequisites](#prerequisites)
-   [Summary](#tutorial)
+- [Prerequisites](#prerequisites)
+- [Summary](#tutorial)
 
 ---
 
