@@ -88,6 +88,7 @@ High level tutorials or walkthroughs on various types of tasks are located in th
 | debugging-amq      | How to debug amq (DB)          | Early            |
 | test tool          | How to use my test tool        | Draft *          |
 | manage-queues         | How to create and manage queues       | Draft *          |
+| exploring-console        | How to use console to manage your broker      | Draft *          |
 
 
 # Migrations

@@ -89,10 +89,62 @@ Hopefully this helps.
 
 ---
 
+So lets start by making a queue for ourselves and see the Artemis Console.
+
+Lets make a custom address that we will have manage our new queue with the following setup.
+
+- A new address called `flifo`
+    - routingType of `ANYCAST`
+    - queues
+        - "flifo.actuals" of type `ANYCAST`
+        - `flifo.schedules` of type `MULTICAST`
+- Lets have the DLQ and Expiry set
+    - deadLetterAddress=aDLQ
+    - expiryAddress=aExpiryQueue
+
+for the broker properties this maps to:
+
+```bash
+  brokerProperties:
+    - addressConfigurations."flifo".routingTypes=ANYCAST
+    - addressConfigurations."flifo".queueConfigs."flifo.actuals".routingType=ANYCAST
+    - addressConfigurations."flifo".queueConfigs."flifo.schedules".routingType=MULTICAST
+    - addressSettings."flifo.*".deadLetterAddress=aDLQ
+    - addressSettings."flifo.*".expiryAddress=aExpiryQueue
+    - addressSettings."flifo.*".maxDeliveryAttempts=3
+```
 
 
+When we look into console we see:
+
+![ConsoleView](https://github.com/axodevelopment/RHAMQ-Tutorials/blob/mainmain/images/address-status.jpg)
+
+You might notice that while the main queues look right, that the `aDLQ` and `aExpiryQueue` are missing.  By default `DLQ` and `ExpiryQueue` are created but, if you want to rename them like we did above, you'll want to approach it one of two ways.  Either use autoCreateQeueu / Addresses or manually specify them.
+
+autocreateQueues exampe:
+
+```bash
+  brokerProperties:
+    - "# Enable auto-creation of queues"
+    - addressSettings."#".autoCreateQueues=true
+    - addressSettings."#".autoCreateAddresses=true
+
+```
+
+Or you can manually create the address:
+
+```bash
+
+    - addressConfigurations."aDLQ".routingTypes=ANYCAST
+    - addressConfigurations."aDLQ".queueConfigs."aDLQ".routingType=ANYCAST
+    - addressConfigurations."aExpiryQueue".routingTypes=ANYCAST
+    - addressConfigurations."aExpiryQueue".queueConfigs."aExpiryQueue".routingType=ANYCAST
+
+```
 
 ---
+
+
 
 ## Reference Links
 
