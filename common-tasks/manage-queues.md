@@ -4,15 +4,7 @@
 ## Table of Contents
 
    [Prerequisites](#prerequisites)
-   [Summary](#summary)
-
-Steps to deploy federated brokers:
-
-1. [Create OpenShift Projects](#1-create-openshift-projects-and-broker-deploy)  
-2. [Without SSL](#2-testing-the-endpoint-from-within-the-ocp-cluster)  
-3. [Test With SSL](#3-testing-with-ssl---self-signed-single-the-endpoint-from-within-the-ocp-cluster)  
-4. [Test With SSL - Chain](#4-testing-with-ssl---full-chain-the-endpoint-from-within-the-ocp-cluster)   
-5. [Cert commands](#5-certs)  
+   [Summary](#tutorial)
 
 ---
 
@@ -24,6 +16,8 @@ Steps to deploy federated brokers:
 - (Optional) Existing TLS certificates. Otherwise, you can generate or fetch sample certificates.  
 
 ---
+
+## Tutorial
 
 To create a `queue` you need to first have some logical representation of which is represented by an `address`.
 
