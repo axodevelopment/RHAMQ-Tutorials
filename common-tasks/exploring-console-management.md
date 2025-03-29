@@ -1,4 +1,4 @@
-# Zero to TLS - Exploring Console
+# Exploring Console
 
 
 ## Table of Contents
