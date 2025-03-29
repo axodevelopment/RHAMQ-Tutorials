@@ -87,6 +87,7 @@ High level tutorials or walkthroughs on various types of tasks are located in th
 | full cert chain    | Tutorials may use full cert so this is my setup.          | Draft *          |
 | debugging-amq      | How to debug amq (DB)          | Early            |
 | test tool          | How to use my test tool        | Draft *          |
+| manage-queues         | How to create and manage queues       | Draft *          |
 
 
 # Migrations
